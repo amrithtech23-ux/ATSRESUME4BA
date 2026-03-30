@@ -23,6 +23,40 @@ experience_level = st.sidebar.selectbox("Your Level", ['fresher', 'junior', 'ass
 st.session_state.experience_level = experience_level
 ba_skills = load_ba_skills(experience_level)
 
+# ===== RESET BUTTON FUNCTION =====
+def reset_form():
+    # Clear all session state keys
+    keys_to_clear = [
+        'full_name', 'email', 'phone', 'linkedin', 'location', 'portfolio', 
+        'work_auth', 'languages', 'grad_degree', 'grad_institution', 'grad_year',
+        'post_grad_degree', 'post_grad_institution', 'pg_year',
+        'cert1_name', 'cert1_inst', 'cert1_year',
+        'cert2_name', 'cert2_inst', 'cert2_year',
+        'cert3_name', 'cert3_inst', 'cert3_year',
+        'professional_summary', 'core_competencies', 'technical_expertise',
+        'functional_expertise', 'domain_expertise',
+        'pos1_org', 'pos1_role', 'pos1_start', 'pos1_end', 'pos1_details',
+        'pos2_org', 'pos2_role', 'pos2_start', 'pos2_end', 'pos2_details',
+        'pos3_org', 'pos3_role', 'pos3_start', 'pos3_end', 'pos3_details',
+        'projects', 'volunteering', 'publications', 'awards', 'interests'
+    ]
+    for key in keys_to_clear:
+        if key in st.session_state:
+            st.session_state[key] = ''
+    st.session_state.experience_level = 'fresher'
+
+# ===== SIDEBAR WITH RESET BUTTON =====
+st.sidebar.header("Select Experience Level")
+experience_level = st.sidebar.selectbox("Your Level", ['fresher', 'junior', 'associate', 'senior', 'principal', 'lead'], format_func=lambda x: x.title())
+st.session_state.experience_level = experience_level
+
+st.sidebar.markdown("---")
+if st.sidebar.button("🔄 Reset Form", type="secondary"):
+    reset_form()
+    st.rerun()
+
+ba_skills = load_ba_skills(experience_level)
+
 # ===== PERSONAL INFORMATION =====
 st.header("Personal Information")
 col1, col2 = st.columns(2)
@@ -152,8 +186,19 @@ with col2:
     awards = st.text_area("Awards", height=80, key="awards")
 interests = st.text_input("Interests", key="interests")
 
-# ===== SUBMIT BUTTON =====
-if st.button("Generate Resume", type="primary"):
+# ===== BUTTONS (Generate & Reset) =====
+col1, col2 = st.columns(2)
+with col1:
+    generate_btn = st.button("Generate Resume", type="primary", use_container_width=True)
+with col2:
+    reset_btn = st.button("🔄 Reset Form", type="secondary", use_container_width=True)
+
+if reset_btn:
+    reset_form()
+    st.success("✅ Form reset! Start filling in your details.")
+    st.rerun()
+
+if generate_btn:
     required = {'Full Name': full_name, 'Email': email, 'Phone': phone, 'Location': location, 
                 'Professional Summary': professional_summary, 'Graduate Degree': grad_degree, 
                 'Graduate Institution': grad_institution}
