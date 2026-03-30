@@ -1,0 +1,290 @@
+{% extends "base.html" %}
+
+{% block title %}Create Resume - The BA Architect{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <h1 class="mb-4">Create Your ATS-Compliant IT Business Analyst Resume</h1>
+        <p class="lead">Fill out the form below to generate a professional, ATS-optimized resume.</p>
+    </div>
+</div>
+
+<form method="POST" action="{{ url_for('submit') }}" class="needs-validation" novalidate>
+    
+    <!-- Personal Information -->
+    <div class="card mb-4">
+        <div class="card-header bg-primary text-white">
+            <h2>Personal Information</h2>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label for="full_name" class="form-label">Full Name *</label>
+                    <input type="text" class="form-control" id="full_name" name="full_name" required>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label for="email" class="form-label">Email Address *</label>
+                    <input type="email" class="form-control" id="email" name="email" required>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-4 mb-3">
+                    <label for="phone" class="form-label">Phone Number *</label>
+                    <input type="tel" class="form-control" id="phone" name="phone" required>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <label for="location" class="form-label">Location *</label>
+                    <input type="text" class="form-control" id="location" name="location" placeholder="City, Country" required>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <label for="experience_level" class="form-label">Experience Level *</label>
+                    <select class="form-select" id="experience_level" name="experience_level" required>
+                        <option value="">Select Level</option>
+                        <option value="fresher">Fresher (0-12 months)</option>
+                        <option value="junior">Junior (1-3 years)</option>
+                        <option value="associate">Associate (3-6 years)</option>
+                        <option value="senior">Senior (6-8 years)</option>
+                        <option value="principal">Principal (8-10 years)</option>
+                        <option value="lead">Lead (10-15+ years)</option>
+                    </select>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label for="linkedin" class="form-label">LinkedIn Profile</label>
+                    <input type="url" class="form-control" id="linkedin" name="linkedin">
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label for="portfolio" class="form-label">Portfolio/GitHub URL</label>
+                    <input type="url" class="form-control" id="portfolio" name="portfolio">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Education -->
+    <div class="card mb-4">
+        <div class="card-header bg-primary text-white">
+            <h2>Education</h2>
+        </div>
+        <div class="card-body">
+            <h4>Graduate Degree (Mandatory)</h4>
+            <div class="row">
+                <div class="col-md-4 mb-3">
+                    <label for="graduate_degree_name" class="form-label">Degree Name *</label>
+                    <input type="text" class="form-control" id="graduate_degree_name" name="graduate_degree_name" required>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <label for="graduate_institution" class="form-label">Institution Name *</label>
+                    <input type="text" class="form-control" id="graduate_institution" name="graduate_institution" required>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <label for="graduate_year" class="form-label">Graduation Year *</label>
+                    <input type="number" class="form-control" id="graduate_year" name="graduate_year" min="1990" max="2026" required>
+                </div>
+            </div>
+            
+            <h4 class="mt-4">Post Graduate Degree (Optional)</h4>
+            <div class="row">
+                <div class="col-md-4 mb-3">
+                    <label for="post_graduate_degree_name" class="form-label">Degree Name</label>
+                    <input type="text" class="form-control" id="post_graduate_degree_name" name="post_graduate_degree_name">
+                </div>
+                <div class="col-md-4 mb-3">
+                    <label for="post_graduate_institution" class="form-label">Institution Name</label>
+                    <input type="text" class="form-control" id="post_graduate_institution" name="post_graduate_institution">
+                </div>
+                <div class="col-md-4 mb-3">
+                    <label for="post_graduate_year" class="form-label">Graduation Year</label>
+                    <input type="number" class="form-control" id="post_graduate_year" name="post_graduate_year" min="1990" max="2026">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Professional Summary -->
+    <div class="card mb-4">
+        <div class="card-header bg-primary text-white">
+            <h2>Professional Summary</h2>
+        </div>
+        <div class="card-body">
+            <label for="professional_summary" class="form-label">Professional Summary (3-4 sentences) *</label>
+            <textarea class="form-control" id="professional_summary" name="professional_summary" rows="4" required></textarea>
+            <small class="text-muted">Summarize your experience level, core competencies, key industries, and value proposition.</small>
+        </div>
+    </div>
+
+    <!-- Core Competencies -->
+    <div class="card mb-4">
+        <div class="card-header bg-primary text-white">
+            <h2>Core Competencies</h2>
+        </div>
+        <div class="card-body">
+            <label for="core_competencies" class="form-label">Core Competencies (10-15 key skills, comma separated) *</label>
+            <textarea class="form-control" id="core_competencies" name="core_competencies" rows="3" required></textarea>
+        </div>
+    </div>
+
+    <!-- Technical & Functional Expertise -->
+    <div class="card mb-4">
+        <div class="card-header bg-primary text-white">
+            <h2>Expertise</h2>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label for="technical_expertise" class="form-label">Technical Expertise (comma separated)</label>
+                    <textarea class="form-control" id="technical_expertise" name="technical_expertise" rows="3"></textarea>
+                    <small class="text-muted">Auto-suggested based on experience level if left blank</small>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label for="functional_expertise" class="form-label">Functional Expertise (comma separated)</label>
+                    <textarea class="form-control" id="functional_expertise" name="functional_expertise" rows="3"></textarea>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12 mb-3">
+                    <label for="domain_expertise" class="form-label">Domain Expertise (comma separated)</label>
+                    <input type="text" class="form-control" id="domain_expertise" name="domain_expertise" placeholder="e.g., FinTech, Healthcare, E-commerce">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Experience -->
+    <div class="card mb-4">
+        <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+            <h2>Professional Experience</h2>
+            <button type="button" class="btn btn-light btn-sm" id="add-experience">+ Add Experience</button>
+        </div>
+        <div class="card-body" id="experience-container">
+            <!-- Experience entries will be added here dynamically -->
+        </div>
+    </div>
+
+    <!-- Certifications -->
+    <div class="card mb-4">
+        <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+            <h2>Certifications</h2>
+            <button type="button" class="btn btn-light btn-sm" id="add-certification">+ Add Certification</button>
+        </div>
+        <div class="card-body" id="certifications-container">
+            <!-- Certification entries will be added here dynamically -->
+        </div>
+    </div>
+
+    <!-- Additional Information -->
+    <div class="card mb-4">
+        <div class="card-header bg-primary text-white">
+            <h2>Additional Information</h2>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label for="projects" class="form-label">Key Projects (For Freshers)</label>
+                    <textarea class="form-control" id="projects" name="projects" rows="3"></textarea>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label for="volunteering" class="form-label">Volunteering & Leadership</label>
+                    <textarea class="form-control" id="volunteering" name="volunteering" rows="3"></textarea>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-4 mb-3">
+                    <label for="publications" class="form-label">Publications</label>
+                    <textarea class="form-control" id="publications" name="publications" rows="2"></textarea>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <label for="awards" class="form-label">Awards</label>
+                    <textarea class="form-control" id="awards" name="awards" rows="2"></textarea>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <label for="interests" class="form-label">Interests</label>
+                    <textarea class="form-control" id="interests" name="interests" rows="2"></textarea>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Submit Buttons -->
+    <div class="d-grid gap-2 d-md-flex justify-content-md-end mb-5">
+        <a href="{{ url_for('reset') }}" class="btn btn-secondary me-md-2">Reset</a>
+        <button type="submit" class="btn btn-primary me-md-2">Generate Resume</button>
+    </div>
+</form>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    let experienceCount = 0;
+    let certificationCount = 0;
+
+    document.getElementById('add-experience').addEventListener('click', function() {
+        const container = document.getElementById('experience-container');
+        const entry = document.createElement('div');
+        entry.className = 'experience-entry card mb-3';
+        entry.innerHTML = `
+            <div class="card-body">
+                <button type="button" class="btn btn-danger btn-sm float-end remove-experience">Remove</button>
+                <h5>Experience ${experienceCount + 1}</h5>
+                <div class="row">
+                    <div class="col-md-4 mb-3">
+                        <label class="form-label">Organization Name *</label>
+                        <input type="text" class="form-control" name="experience_org_${experienceCount}" required>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label class="form-label">Role *</label>
+                        <input type="text" class="form-control" name="experience_role_${experienceCount}" required>
+                    </div>
+                    <div class="col-md-2 mb-3">
+                        <label class="form-label">Start Year *</label>
+                        <input type="number" class="form-control" name="experience_start_year_${experienceCount}" min="1990" max="2026" required>
+                    </div>
+                    <div class="col-md-2 mb-3">
+                        <label class="form-label">End Year/Present</label>
+                        <input type="text" class="form-control" name="experience_end_year_${experienceCount}" placeholder="Present">
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Project Details (one per line) *</label>
+                    <textarea class="form-control" name="experience_details_${experienceCount}" rows="4" required></textarea>
+                </div>
+            </div>
+        `;
+        container.appendChild(entry);
+        experienceCount++;
+        
+        entry.querySelector('.remove-experience').addEventListener('click', function() {
+            entry.remove();
+        });
+    });
+
+    document.getElementById('add-certification').addEventListener('click', function() {
+        const container = document.getElementById('certifications-container');
+        const entry = document.createElement('div');
+        entry.className = 'certification-entry row mb-3';
+        entry.innerHTML = `
+            <button type="button" class="btn btn-danger btn-sm col-12 mb-2 remove-certification">Remove</button>
+            <div class="col-md-4 mb-3">
+                <label class="form-label">Certification Name</label>
+                <input type="text" class="form-control" name="certification_name_${certificationCount}">
+            </div>
+            <div class="col-md-4 mb-3">
+                <label class="form-label">Institution</label>
+                <input type="text" class="form-control" name="certification_institution_${certificationCount}">
+            </div>
+            <div class="col-md-3 mb-3">
+                <label class="form-label">Year</label>
+                <input type="number" class="form-control" name="certification_year_${certificationCount}" min="1990" max="2026">
+            </div>
+        `;
+        container.appendChild(entry);
+        certificationCount++;
+        
+        entry.querySelector('.remove-certification').addEventListener('click', function() {
+            entry.remove();
+        });
+    });
+</script>
+{% endblock %}
