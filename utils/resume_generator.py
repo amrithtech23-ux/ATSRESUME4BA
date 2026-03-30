@@ -17,7 +17,7 @@ def generate_resume_html(resume_data, experience_level):
     template_data['a4_width'] = Config.A4_WIDTH
     template_data['a4_height'] = Config.A4_HEIGHT
     
-    html_content = template.render(**template_data)
+    html_content = template.render(resume_data=template_data)    
     
     return html_content
 
