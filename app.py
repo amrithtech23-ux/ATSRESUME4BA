@@ -23,7 +23,7 @@ experience_level = st.sidebar.selectbox("Your Level", ['fresher', 'junior', 'ass
 st.session_state.experience_level = experience_level
 ba_skills = load_ba_skills(experience_level)
 
-# ===== PERSONAL INFO =====
+# ===== PERSONAL INFORMATION =====
 st.header("Personal Information")
 col1, col2 = st.columns(2)
 with col1:
@@ -51,7 +51,7 @@ with col2:
     post_grad_institution = st.text_input("Institution", key="post_grad_institution")
     post_grad_year = st.number_input("Graduation Year", min_value=1990, max_value=2026, key="pg_year", value=2020)
 
-# ===== CERTIFICATIONS - RIGHT HERE AFTER EDUCATION =====
+# ===== CERTIFICATIONS - RIGHT AFTER EDUCATION =====
 st.header("Certifications (Optional)")
 st.write("Fill in certifications if applicable")
 
@@ -59,7 +59,7 @@ certifications = []
 
 st.subheader("Certification 1")
 c1, c2, c3 = st.columns(3)
-cert1_name = c1.text_input("Name", key="cert1_name")
+cert1_name = c1.text_input("Certification Name", key="cert1_name")
 cert1_inst = c2.text_input("Institution", key="cert1_inst")
 cert1_year = c3.number_input("Year", min_value=1990, max_value=2026, key="cert1_year", value=2024)
 if cert1_name:
@@ -67,7 +67,7 @@ if cert1_name:
 
 st.subheader("Certification 2")
 c1, c2, c3 = st.columns(3)
-cert2_name = c1.text_input("Name", key="cert2_name")
+cert2_name = c1.text_input("Certification Name", key="cert2_name")
 cert2_inst = c2.text_input("Institution", key="cert2_inst")
 cert2_year = c3.number_input("Year", min_value=1990, max_value=2026, key="cert2_year", value=2024)
 if cert2_name:
@@ -75,7 +75,7 @@ if cert2_name:
 
 st.subheader("Certification 3")
 c1, c2, c3 = st.columns(3)
-cert3_name = c1.text_input("Name", key="cert3_name")
+cert3_name = c1.text_input("Certification Name", key="cert3_name")
 cert3_inst = c2.text_input("Institution", key="cert3_inst")
 cert3_year = c3.number_input("Year", min_value=1990, max_value=2026, key="cert3_year", value=2024)
 if cert3_name:
@@ -141,7 +141,7 @@ pos3_details = st.text_area("Project Details", height=100, key="pos3_details")
 if pos3_org and pos3_role:
     experience.append({'organization_name': pos3_org, 'role': pos3_role, 'job_start_year': pos3_start, 'job_end_year': pos3_end, 'project_detail': pos3_details.split('\n') if pos3_details else []})
 
-# ===== ADDITIONAL INFO =====
+# ===== ADDITIONAL INFORMATION =====
 st.header("Additional Information")
 col1, col2 = st.columns(2)
 with col1:
@@ -152,19 +152,25 @@ with col2:
     awards = st.text_area("Awards", height=80, key="awards")
 interests = st.text_input("Interests", key="interests")
 
-# ===== SUBMIT =====
+# ===== SUBMIT BUTTON =====
 if st.button("Generate Resume", type="primary"):
-    required = {'Full Name': full_name, 'Email': email, 'Phone': phone, 'Location': location, 'Professional Summary': professional_summary, 'Graduate Degree': grad_degree, 'Graduate Institution': grad_institution}
+    required = {'Full Name': full_name, 'Email': email, 'Phone': phone, 'Location': location, 
+                'Professional Summary': professional_summary, 'Graduate Degree': grad_degree, 
+                'Graduate Institution': grad_institution}
     missing = [f for f, v in required.items() if not v]
     if missing:
         st.error(f"Please fill: {', '.join(missing)}")
     else:
         resume_data = {
             'full_name': full_name, 'email': email, 'phone': phone, 'location': location,
-            'linkedin': linkedin, 'portfolio': portfolio, 'work_authorization': work_auth, 'languages': languages,
-            'experience_level': experience_level, 'professional_summary': professional_summary,
-            'graduate_degree': {'degree_name': grad_degree, 'institution_name': grad_institution, 'graduation_year': grad_year},
-            'post_graduate_degree': {'degree_name': post_grad_degree or None, 'institution_name': post_grad_institution or None, 'graduation_year': post_grad_year or None},
+            'linkedin': linkedin, 'portfolio': portfolio, 'work_authorization': work_auth, 
+            'languages': languages, 'experience_level': experience_level, 
+            'professional_summary': professional_summary,
+            'graduate_degree': {'degree_name': grad_degree, 'institution_name': grad_institution, 
+                              'graduation_year': grad_year},
+            'post_graduate_degree': {'degree_name': post_grad_degree or None, 
+                                   'institution_name': post_grad_institution or None, 
+                                   'graduation_year': post_grad_year or None},
             'certifications': certifications,
             'technical_expertise': [x.strip() for x in technical_expertise.split(',') if x.strip()],
             'functional_expertise': [x.strip() for x in functional_expertise.split(',') if x.strip()],
@@ -177,9 +183,8 @@ if st.button("Generate Resume", type="primary"):
             html = generate_resume_html(resume_data, experience_level)
             st.success("✅ Resume Generated!")
             st.components.v1.html(html, height=800, scrolling=True)
-            with tempfile.NamedTemporaryFile(mode='w', delete=False, suffix='.html') as f:
-                f.write(html)
-                st.download_button("📥 Download HTML", data=html, file_name=f"Resume_{full_name.replace(' ', '_')}.html", mime="text/html")
+            st.download_button("📥 Download HTML", data=html, 
+                             file_name=f"Resume_{full_name.replace(' ', '_')}.html", mime="text/html")
         except Exception as e:
             st.error(f"Error: {str(e)}")
             st.exception(e)
