@@ -1,219 +1,295 @@
-from flask import Flask, render_template, request, redirect, url_for, flash, send_file, session
-from config import Config
+import streamlit as st
+import json
+import os
+from datetime import datetime
 from utils.validators import validate_graduation_year, validate_experience_period
 from utils.resume_generator import generate_resume_html
-from utils.pdf_export import export_to_pdf
-from utils.word_export import export_to_word
-import os
-import json
-from datetime import datetime
-from werkzeug.utils import secure_filename
+import tempfile
 
-app = Flask(__name__)
-app.config.from_object(Config)
+# Page config
+st.set_page_config(
+    page_title="The BA Architect - ATS Resume Generator",
+    page_icon="📄",
+    layout="wide"
+)
 
-# Create directories
-Config.create_directories()
+# Title
+st.title("📄 The BA Architect")
+st.subheader("ATS-Compliant IT Business Analyst Resume Generator")
 
-# Load BA Skills Data
-def load_ba_skills(level='fresher'):
-    """Load BA skills from JSON file based on experience level"""
-    skills_file = os.path.join(Config.DATA_DIR, f'ba_skills_{level}.json')
+# Initialize session state
+if 'resume_data' not in st.session_state:
+    st.session_state.resume_data = None
+if 'experience_level' not in st.session_state:
+    st.session_state.experience_level = 'fresher'
+
+# Load BA Skills
+def load_ba_skills(level):
+    skills_file = f'data/ba_skills_{level}.json'
     if os.path.exists(skills_file):
         with open(skills_file, 'r', encoding='utf-8') as f:
             return json.load(f)
     return {}
 
-@app.route('/')
-def index():
-    """Main page - Form to collect resume data"""
-    ba_skills = load_ba_skills('fresher')
-    return render_template('index.html', ba_skills=ba_skills, experience_levels=Config.EXPERIENCE_LEVELS)
+# Sidebar - Experience Level
+st.sidebar.header("Select Experience Level")
+experience_level = st.sidebar.selectbox(
+    "Your Level",
+    ['fresher', 'junior', 'associate', 'senior', 'principal', 'lead'],
+    format_func=lambda x: x.title()
+)
 
-@app.route('/submit', methods=['POST'])
-def submit():
-    """Process form submission and generate resume"""
-    try:
-        # Extract form data
-        resume_data = extract_form_data(request.form)
-        experience_level = resume_data.get('experience_level', 'fresher')
-        
-        # Validate data
-        validation_errors = validate_resume_data(resume_data)
-        if validation_errors:
-            for error in validation_errors:
-                flash(error, 'error')
-            return redirect(url_for('index'))
-        
-        # Load skills if not provided
-        if not resume_data.get('technical_expertise'):
-            ba_skills = load_ba_skills(experience_level)
-            resume_data['technical_expertise'] = ba_skills.get('technical', [])
-        if not resume_data.get('functional_expertise'):
-            ba_skills = load_ba_skills(experience_level)
-            resume_data['functional_expertise'] = ba_skills.get('functional', [])
-        
-        # Store in session
-        session['resume_data'] = resume_data
-        session['experience_level'] = experience_level
-        
-        return redirect(url_for('preview'))
-        
-    except Exception as e:
-        flash(f'Error processing form: {str(e)}', 'error')
-        return redirect(url_for('index'))
+st.session_state.experience_level = experience_level
 
-@app.route('/preview')
-def preview():
-    """Preview generated resume"""
-    if 'resume_data' not in session:
-        flash('No resume data found. Please fill out the form first.', 'error')
-        return redirect(url_for('index'))
+# Load skills for auto-suggestions
+ba_skills = load_ba_skills(experience_level)
+
+# Main Form
+with st.form("resume_form", clear_on_submit=False):
+    st.header("Personal Information")
+    col1, col2 = st.columns(2)
     
-    resume_data = session['resume_data']
-    experience_level = session.get('experience_level', 'fresher')
+    with col1:
+        full_name = st.text_input("Full Name *", "")
+        email = st.text_input("Email Address *", "")
+        phone = st.text_input("Phone Number *", "")
+        linkedin = st.text_input("LinkedIn Profile", "")
     
-    # Generate HTML Resume
-    resume_html = generate_resume_html(resume_data, experience_level)
+    with col2:
+        location = st.text_input("Location (City, Country) *", "")
+        portfolio = st.text_input("Portfolio/GitHub URL", "")
+        work_auth = st.text_input("Work Authorization", "")
+        languages = st.text_input("Languages", "")
     
-    return render_template('preview.html', 
-                         resume_html=resume_html, 
-                         resume_data=resume_data,
-                         experience_level=experience_level)
-
-@app.route('/export/<format_type>')
-def export(format_type):
-    """Export resume to PDF or Word format"""
-    if 'resume_data' not in session:
-        flash('No resume data found.', 'error')
-        return redirect(url_for('index'))
+    st.header("Education")
+    col1, col2 = st.columns(2)
     
-    resume_data = session['resume_data']
-    experience_level = session.get('experience_level', 'fresher')
+    with col1:
+        st.subheader("Graduate Degree (Mandatory)")
+        grad_degree = st.text_input("Degree Name *", "")
+        grad_institution = st.text_input("Institution *", "")
+        grad_year = st.number_input("Graduation Year *", min_value=1990, max_value=2026)
     
-    try:
-        filename = f"BA_Architect_Resume_{resume_data['full_name'].replace(' ', '_')}_{datetime.now().strftime('%Y%m%d_%H%M%S')}"
-        
-        if format_type == 'pdf':
-            file_path = export_to_pdf(resume_data, experience_level, filename)
-            return send_file(file_path, as_attachment=True, download_name=f"{filename}.pdf")
-        
-        elif format_type == 'word':
-            file_path = export_to_word(resume_data, experience_level, filename)
-            return send_file(file_path, as_attachment=True, download_name=f"{filename}.docx")
-        
-        else:
-            flash('Invalid export format.', 'error')
-            return redirect(url_for('preview'))
-            
-    except Exception as e:
-        flash(f'Error exporting resume: {str(e)}', 'error')
-        return redirect(url_for('preview'))
-
-@app.route('/reset')
-def reset():
-    """Clear session and reset form"""
-    session.clear()
-    flash('Form has been reset.', 'info')
-    return redirect(url_for('index'))
-
-def extract_form_data(form_data):
-    """Extract and format data from form submission"""
-    return {
-        'full_name': form_data.get('full_name', ''),
-        'email': form_data.get('email', ''),
-        'phone': form_data.get('phone', ''),
-        'location': form_data.get('location', ''),
-        'linkedin': form_data.get('linkedin', ''),
-        'portfolio': form_data.get('portfolio', ''),
-        'work_authorization': form_data.get('work_authorization', ''),
-        'languages': form_data.get('languages', ''),
-        'experience_level': form_data.get('experience_level', 'fresher'),
-        'professional_summary': form_data.get('professional_summary', ''),
-        'graduate_degree': {
-            'degree_name': form_data.get('graduate_degree_name', ''),
-            'institution_name': form_data.get('graduate_institution', ''),
-            'graduation_year': int(form_data.get('graduate_year', 0))
-        },
-        'post_graduate_degree': {
-            'degree_name': form_data.get('post_graduate_degree_name', ''),
-            'institution_name': form_data.get('post_graduate_institution', ''),
-            'graduation_year': int(form_data.get('post_graduate_year', 0)) if form_data.get('post_graduate_year') else None
-        },
-        'certifications': extract_certifications(form_data),
-        'technical_expertise': [x.strip() for x in form_data.get('technical_expertise', '').split(',') if x.strip()],
-        'functional_expertise': [x.strip() for x in form_data.get('functional_expertise', '').split(',') if x.strip()],
-        'domain_expertise': [x.strip() for x in form_data.get('domain_expertise', '').split(',') if x.strip()],
-        'core_competencies': [x.strip() for x in form_data.get('core_competencies', '').split(',') if x.strip()],
-        'tools_technologies': [x.strip() for x in form_data.get('tools_technologies', '').split(',') if x.strip()],
-        'experience': extract_experience(form_data),
-        'projects': form_data.get('projects', ''),
-        'volunteering': form_data.get('volunteering', ''),
-        'publications': form_data.get('publications', ''),
-        'awards': form_data.get('awards', ''),
-        'interests': form_data.get('interests', '')
-    }
-
-def extract_certifications(form_data):
-    """Extract certifications from form data"""
-    certifications = []
-    i = 0
-    while True:
-        cert_name = form_data.get(f'certification_name_{i}', '')
-        if not cert_name:
-            break
-        certifications.append({
-            'certification_name': cert_name,
-            'institution_name': form_data.get(f'certification_institution_{i}', ''),
-            'certification_year': int(form_data.get(f'certification_year_{i}', 0)) if form_data.get(f'certification_year_{i}') else None
-        })
-        i += 1
-    return certifications
-
-def extract_experience(form_data):
-    """Extract experience from form data"""
+    with col2:
+        st.subheader("Post Graduate (Optional)")
+        post_grad_degree = st.text_input("Degree Name", "")
+        post_grad_institution = st.text_input("Institution", "")
+        post_grad_year = st.number_input("Graduation Year", min_value=1990, max_value=2026, key="pg_year")
+    
+    st.header("Professional Summary")
+    professional_summary = st.text_area(
+        "Professional Summary (3-4 sentences) *",
+        height=100,
+        help="Summarize your experience, core competencies, and value proposition"
+    )
+    
+    st.header("Core Competencies")
+    core_competencies = st.text_area(
+        "Core Competencies (comma separated) *",
+        height=80,
+        value=", ".join(ba_skills.get('functional', [])[:10]) if ba_skills else ""
+    )
+    
+    st.header("Expertise")
+    col1, col2 = st.columns(2)
+    
+    with col1:
+        technical_expertise = st.text_area(
+            "Technical Expertise (comma separated)",
+            height=80,
+            value=", ".join(ba_skills.get('technical', [])) if ba_skills else ""
+        )
+    
+    with col2:
+        functional_expertise = st.text_area(
+            "Functional Expertise (comma separated)",
+            height=80,
+            value=", ".join(ba_skills.get('functional', [])) if ba_skills else ""
+        )
+    
+    domain_expertise = st.text_input("Domain Expertise (comma separated)", "")
+    
+    # FIX ISSUE 1: Professional Experience Section
+    st.header("Professional Experience")
+    num_positions = st.number_input("Number of Positions", min_value=0, max_value=10, value=0, 
+                                    help="Enter number of positions you want to add (0-10)")
+    
     experience = []
-    i = 0
-    while True:
-        org_name = form_data.get(f'experience_org_{i}', '')
-        if not org_name:
-            break
-        experience.append({
-            'organization_name': org_name,
-            'role': form_data.get(f'experience_role_{i}', ''),
-            'job_start_year': int(form_data.get(f'experience_start_year_{i}', 0)),
-            'job_end_year': form_data.get(f'experience_end_year_{i}', '') or 'Present',
-            'project_detail': form_data.get(f'experience_details_{i}', '').split('\n')
-        })
-        i += 1
-    return experience
+    
+    # Render position fields based on num_positions
+    if num_positions > 0:
+        for i in range(int(num_positions)):
+            st.subheader(f"Position {i+1}")
+            col1, col2 = st.columns(2)
+            
+            with col1:
+                org_name = st.text_input("Organization Name *", key=f"org_{i}")
+                role = st.text_input("Role *", key=f"role_{i}")
+            
+            with col2:
+                start_year = st.number_input("Start Year *", min_value=1990, max_value=2026, 
+                                           key=f"start_{i}", value=2020)
+                end_year = st.text_input("End Year (or 'Present')", value="Present", key=f"end_{i}")
+            
+            project_details = st.text_area(
+                "Project Details (one per line)",
+                height=150,
+                key=f"details_{i}",
+                help="Enter each project responsibility/achievement on a new line"
+            )
+            
+            # Only add to experience if organization and role are filled
+            if org_name and role:
+                experience.append({
+                    'organization_name': org_name,
+                    'role': role,
+                    'job_start_year': start_year,
+                    'job_end_year': end_year,
+                    'project_detail': project_details.split('\n') if project_details else []
+                })
+            
+            # Add separator between positions
+            if i < num_positions - 1:
+                st.markdown("---")
+    
+    # FIX ISSUE 2: Certifications Section
+    st.header("Certifications")
+    num_certs = st.number_input("Number of Certifications", min_value=0, max_value=10, value=0,
+                                help="Enter number of certifications you want to add (0-10)")
+    
+    certifications = []
+    
+    # Render certification fields based on num_certs
+    if num_certs > 0:
+        for i in range(int(num_certs)):
+            st.subheader(f"Certification {i+1}")
+            col1, col2, col3 = st.columns(3)
+            
+            with col1:
+                cert_name = st.text_input("Certification Name *", key=f"cert_name_{i}")
+            with col2:
+                cert_institution = st.text_input("Institution", key=f"cert_inst_{i}")
+            with col3:
+                cert_year = st.number_input("Year", min_value=1990, max_value=2026, 
+                                          key=f"cert_year_{i}", value=2024)
+            
+            # Only add to certifications if name is filled
+            if cert_name:
+                certifications.append({
+                    'certification_name': cert_name,
+                    'institution_name': cert_institution,
+                    'certification_year': cert_year
+                })
+            
+            # Add separator between certifications
+            if i < num_certs - 1:
+                st.markdown("---")
+    
+    st.header("Additional Information")
+    col1, col2 = st.columns(2)
+    
+    with col1:
+        projects = st.text_area("Key Projects (For Freshers)", height=80)
+        volunteering = st.text_area("Volunteering & Leadership", height=80)
+    
+    with col2:
+        publications = st.text_area("Publications", height=80)
+        awards = st.text_area("Awards", height=80)
+    
+    interests = st.text_input("Interests", "")
+    
+    # Submit button
+    submitted = st.form_submit_button("Generate Resume", type="primary")
 
-def validate_resume_data(data):
-    """Validate resume data"""
-    errors = []
+if submitted:
+    # Validate required fields
+    required_fields = {
+        'Full Name': full_name,
+        'Email': email,
+        'Phone': phone,
+        'Location': location,
+        'Professional Summary': professional_summary,
+        'Graduate Degree': grad_degree,
+        'Graduate Institution': grad_institution
+    }
     
-    # Required fields
-    required_fields = ['full_name', 'email', 'phone', 'location', 'professional_summary']
-    for field in required_fields:
-        if not data.get(field):
-            errors.append(f'{field.replace("_", " ").title()} is required')
+    missing_fields = [field for field, value in required_fields.items() if not value]
     
-    # Email validation
-    import re
-    if data.get('email') and not re.match(Config.EMAIL_REGEX, data['email']):
-        errors.append('Invalid email format')
-    
-    # Graduation year validation
-    grad_year = data.get('graduate_degree', {}).get('graduation_year', 0)
-    if not validate_graduation_year(grad_year):
-        errors.append(f'Graduation year must be between {Config.GRADUATION_YEAR_MIN} and {Config.GRADUATION_YEAR_MAX}')
-    
-    # Experience validation
-    for exp in data.get('experience', []):
-        if not validate_experience_period(exp.get('job_start_year', 0), exp.get('job_end_year')):
-            errors.append(f'Invalid experience period for {exp.get("organization_name", "an organization")}')
-    
-    return errors
+    if missing_fields:
+        st.error(f"Please fill in all required fields: {', '.join(missing_fields)}")
+    else:
+        # Compile resume data
+        resume_data = {
+            'full_name': full_name,
+            'email': email,
+            'phone': phone,
+            'location': location,
+            'linkedin': linkedin,
+            'portfolio': portfolio,
+            'work_authorization': work_auth,
+            'languages': languages,
+            'experience_level': experience_level,
+            'professional_summary': professional_summary,
+            'graduate_degree': {
+                'degree_name': grad_degree,
+                'institution_name': grad_institution,
+                'graduation_year': grad_year
+            },
+            'post_graduate_degree': {
+                'degree_name': post_grad_degree if post_grad_degree else None,
+                'institution_name': post_grad_institution if post_grad_institution else None,
+                'graduation_year': post_grad_year if post_grad_year else None
+            },
+            'certifications': certifications,
+            'technical_expertise': [x.strip() for x in technical_expertise.split(',') if x.strip()],
+            'functional_expertise': [x.strip() for x in functional_expertise.split(',') if x.strip()],
+            'domain_expertise': [x.strip() for x in domain_expertise.split(',') if x.strip()],
+            'core_competencies': [x.strip() for x in core_competencies.split(',') if x.strip()],
+            'experience': experience,
+            'projects': projects,
+            'volunteering': volunteering,
+            'publications': publications,
+            'awards': awards,
+            'interests': interests
+        }
+        
+        st.session_state.resume_data = resume_data
+        
+        # Generate resume HTML
+        try:
+            resume_html = generate_resume_html(resume_data, experience_level)
+            
+            st.success("✅ Resume Generated Successfully!")
+            
+            # Display preview
+            st.header("Resume Preview")
+            st.components.v1.html(resume_html, height=800, scrolling=True)
+            
+            # Download options
+            st.header("Download Options")
+            col1, col2 = st.columns(2)
+            
+            with col1:
+                # Save as HTML file for download
+                html_file = tempfile.NamedTemporaryFile(mode='w', delete=False, suffix='.html')
+                html_file.write(resume_html)
+                html_file.close()
+                
+                with open(html_file.name, 'r', encoding='utf-8') as f:
+                    st.download_button(
+                        label="📥 Download as HTML",
+                        data=f.read(),
+                        file_name=f"BA_Resume_{full_name.replace(' ', '_')}.html",
+                        mime="text/html"
+                    )
+            
+            with col2:
+                st.info("💡 For PDF/Word export, use the HTML file and convert using your browser's Print to PDF feature")
+        
+        except Exception as e:
+            st.error(f"Error generating resume: {str(e)}")
+            st.exception(e)  # Show full traceback for debugging
 
-if __name__ == '__main__':
-    app.run(debug=True, host='0.0.0.0', port=5000)
+# Footer
+st.markdown("---")
+st.markdown("© 2026 The BA Architect - ATS-Compliant IT Business Analyst Resume Generator")
