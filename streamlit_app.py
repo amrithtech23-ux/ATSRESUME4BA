@@ -18,14 +18,8 @@ def load_ba_skills(level):
             return json.load(f)
     return {}
 
-st.sidebar.header("Select Experience Level")
-experience_level = st.sidebar.selectbox("Your Level", ['fresher', 'junior', 'associate', 'senior', 'principal', 'lead'], format_func=lambda x: x.title())
-st.session_state.experience_level = experience_level
-ba_skills = load_ba_skills(experience_level)
-
-# ===== RESET BUTTON FUNCTION =====
+# ===== RESET FUNCTION =====
 def reset_form():
-    # Clear all session state keys
     keys_to_clear = [
         'full_name', 'email', 'phone', 'linkedin', 'location', 'portfolio', 
         'work_auth', 'languages', 'grad_degree', 'grad_institution', 'grad_year',
@@ -45,13 +39,18 @@ def reset_form():
             st.session_state[key] = ''
     st.session_state.experience_level = 'fresher'
 
-# ===== SIDEBAR WITH RESET BUTTON =====
+# ===== SIDEBAR (ONLY ONCE!) =====
 st.sidebar.header("Select Experience Level")
-experience_level = st.sidebar.selectbox("Your Level", ['fresher', 'junior', 'associate', 'senior', 'principal', 'lead'], format_func=lambda x: x.title())
+experience_level = st.sidebar.selectbox(
+    "Your Level", 
+    ['fresher', 'junior', 'associate', 'senior', 'principal', 'lead'], 
+    format_func=lambda x: x.title(),
+    key="experience_level_select"  # Added unique key
+)
 st.session_state.experience_level = experience_level
 
 st.sidebar.markdown("---")
-if st.sidebar.button("🔄 Reset Form", type="secondary"):
+if st.sidebar.button("🔄 Reset Form", type="secondary", key="reset_sidebar"):
     reset_form()
     st.rerun()
 
@@ -85,7 +84,7 @@ with col2:
     post_grad_institution = st.text_input("Institution", key="post_grad_institution")
     post_grad_year = st.number_input("Graduation Year", min_value=1990, max_value=2026, key="pg_year", value=2020)
 
-# ===== CERTIFICATIONS - RIGHT AFTER EDUCATION =====
+# ===== CERTIFICATIONS =====
 st.header("Certifications (Optional)")
 st.write("Fill in certifications if applicable")
 
@@ -186,12 +185,12 @@ with col2:
     awards = st.text_area("Awards", height=80, key="awards")
 interests = st.text_input("Interests", key="interests")
 
-# ===== BUTTONS (Generate & Reset) =====
+# ===== BUTTONS =====
 col1, col2 = st.columns(2)
 with col1:
-    generate_btn = st.button("Generate Resume", type="primary", use_container_width=True)
+    generate_btn = st.button("Generate Resume", type="primary", use_container_width=True, key="generate_btn")
 with col2:
-    reset_btn = st.button("🔄 Reset Form", type="secondary", use_container_width=True)
+    reset_btn = st.button("🔄 Reset Form", type="secondary", use_container_width=True, key="reset_bottom_btn")
 
 if reset_btn:
     reset_form()
