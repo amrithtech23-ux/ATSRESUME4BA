@@ -1,0 +1,62 @@
+{
+    "technical": [
+        "Advanced SQL (Complex Queries & Optimization)",
+        "API Testing & Integration Validation (Postman, REST Assured)",
+        "Agile & Product Management Tools (JIRA, Azure DevOps, ClickUp)",
+        "Business Process Modeling (BPMN 2.0, UML)",
+        "Prototyping & UX Collaboration (Figma, Miro, Balsamiq)",
+        "Database Architecture & Data Lineage",
+        "Advanced Excel & Data Visualization (Power BI/Tableau)",
+        "Cloud Platforms (AWS, Azure, GCP – Practitioner Level)",
+        "Observability & Log Analytics (Splunk, Datadog, ELK Stack)",
+        "Version Control & CI/CD Awareness (Git, GitHub Actions, Jenkins)"
+    ],
+    "functional": [
+        "Advanced Requirements Elicitation",
+        "User Story Mapping & Feature Decomposition",
+        "Gap Analysis & Solution Assessment",
+        "Impact Assessment & Risk Analysis",
+        "Backlog Management & Prioritization",
+        "Stakeholder Management & Communication",
+        "Requirements Traceability Matrix (RTM) & Compliance",
+        "Change Enablement & Release Management",
+        "Agile Facilitation & Coaching",
+        "Post-Implementation Reviews & Metrics Definition"
+    ],
+    "domains": [
+        "FinTech & Digital Banking",
+        "Wealth Management & Capital Markets",
+        "E-commerce & Marketplace Platforms",
+        "SaaS & B2B Product Platforms",
+        "Healthcare & Digital Health",
+        "Supply Chain & Logistics",
+        "Insurance (P&C, Life, Health)",
+        "Enterprise Resource Planning (ERP)",
+        "Human Capital Management (HCM) & Workforce Tech",
+        "Regulatory Technology (RegTech) & Compliance"
+    ],
+    "soft_skills": [
+        "Business Language Expertise – Mandarin (Chinese)",
+        "Business Language Expertise – European Languages (German/French/Spanish)",
+        "Cross-Cultural Communication",
+        "Executive Presentation & Storytelling",
+        "Negotiation & Persuasion",
+        "Strategic Thinking & Business Acumen",
+        "Emotional Intelligence (EQ)",
+        "Complex Problem Solving",
+        "Mentorship & Knowledge Transfer",
+        "Adaptability & Learning Agility"
+    ],
+    "tools": [
+        "JIRA with Atlassian Intelligence",
+        "Confluence/Notion with AI",
+        "Figma with Figma AI",
+        "Lucidchart/Microsoft Visio (Copilot)",
+        "Microsoft 365 Copilot",
+        "Postman (with Postbot AI)",
+        "Power BI/Tableau with AI Features",
+        "GitHub Copilot",
+        "Splunk/Datadog",
+        "Otter.ai/Microsoft Teams Premium"
+    ]
+}
