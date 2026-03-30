@@ -72,17 +72,16 @@ with col2:
     post_grad_institution = st.text_input("Institution", key="post_grad_institution")
     post_grad_year = st.number_input("Graduation Year", min_value=1990, max_value=2026, key="pg_year", value=2020)
 
-# Certifications - MOVED HERE (Right after Education)
-st.header("Certifications")
-st.markdown("*Fill in as many certifications as needed. Leave blank if not applicable.*")
+# Certifications - RIGHT AFTER EDUCATION (Optional)
+st.header("Certifications (Optional)")
+st.markdown("*Fill in certifications if applicable. Leave blank if not.*")
 
 certifications = []
 
 # Certification 1
-st.subheader("Certification 1")
 col1, col2, col3 = st.columns(3)
 with col1:
-    cert1_name = st.text_input("Certification Name", key="cert1_name")
+    cert1_name = st.text_input("Certification 1 Name", key="cert1_name")
 with col2:
     cert1_inst = st.text_input("Institution", key="cert1_inst")
 with col3:
@@ -96,10 +95,9 @@ if cert1_name:
     })
 
 # Certification 2
-st.subheader("Certification 2")
 col1, col2, col3 = st.columns(3)
 with col1:
-    cert2_name = st.text_input("Certification Name", key="cert2_name")
+    cert2_name = st.text_input("Certification 2 Name", key="cert2_name")
 with col2:
     cert2_inst = st.text_input("Institution", key="cert2_inst")
 with col3:
@@ -113,10 +111,9 @@ if cert2_name:
     })
 
 # Certification 3
-st.subheader("Certification 3")
 col1, col2, col3 = st.columns(3)
 with col1:
-    cert3_name = st.text_input("Certification Name", key="cert3_name")
+    cert3_name = st.text_input("Certification 3 Name", key="cert3_name")
 with col2:
     cert3_inst = st.text_input("Institution", key="cert3_inst")
 with col3:
@@ -154,7 +151,7 @@ domain_expertise = st.text_input("Domain Expertise (comma separated)", key="doma
 
 # Professional Experience Section
 st.header("Professional Experience")
-st.markdown("*Fill in as many positions as needed. Leave blank if not applicable.*")
+st.markdown("*Fill in positions if applicable. Leave blank if fresher.*")
 
 experience = []
 
