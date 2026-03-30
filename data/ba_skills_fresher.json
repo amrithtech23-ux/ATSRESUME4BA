@@ -1,0 +1,57 @@
+{
+    "technical": [
+        "SQL (Intermediate)",
+        "API Testing (Postman/Swagger)",
+        "Agile Tools (JIRA, Confluence, Azure DevOps)",
+        "Business Process Modeling (BPMN/UML)",
+        "Prototyping & Wireframing (Figma, Balsamiq)",
+        "Database Concepts (RDBMS)",
+        "Advanced Excel (Power Query, Pivot Tables)",
+        "Cloud Fundamentals (AWS/Azure Basics)",
+        "Log Analysis & Debugging (Splunk, Datadog)",
+        "Version Control Basics (Git/GitHub)"
+    ],
+    "functional": [
+        "Requirements Elicitation",
+        "User Story Writing & Acceptance Criteria",
+        "Gap Analysis",
+        "Impact Analysis",
+        "Backlog Prioritization (MoSCoW, WSJF)",
+        "Stakeholder Management",
+        "Requirements Traceability Matrix (RTM)",
+        "Change Request Management",
+        "Agile Ceremonies Facilitation",
+        "Post-Deployment Hyper-Care Support"
+    ],
+    "domains": [
+        "FinTech & Digital Payments",
+        "E-commerce & Retail",
+        "SaaS & Product Development",
+        "Healthcare/HealthTech",
+        "Enterprise ERP (Order-to-Cash/Procure-to-Pay)"
+    ],
+    "soft_skills": [
+        "Analytical & Critical Thinking",
+        "Verbal Communication",
+        "Business Writing & Documentation",
+        "Active Listening",
+        "Conflict Resolution",
+        "Negotiation",
+        "Empathy & User-Centric Mindset",
+        "Time Management & Prioritization",
+        "Attention to Detail",
+        "Adaptability & Learning Agility"
+    ],
+    "tools": [
+        "JIRA",
+        "Confluence",
+        "Figma",
+        "Lucidchart",
+        "Microsoft Copilot",
+        "Postman",
+        "SQL Server Management Studio",
+        "Splunk",
+        "GitHub Copilot",
+        "Otter.ai"
+    ]
+}
