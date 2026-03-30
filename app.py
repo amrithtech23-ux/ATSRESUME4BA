@@ -17,15 +17,9 @@ st.set_page_config(
 st.title("📄 The BA Architect")
 st.subheader("ATS-Compliant IT Business Analyst Resume Generator")
 
-# Initialize session state
-if 'resume_data' not in st.session_state:
-    st.session_state.resume_data = None
+# Initialize session state - ONLY for experience level
 if 'experience_level' not in st.session_state:
     st.session_state.experience_level = 'fresher'
-if 'num_positions' not in st.session_state:
-    st.session_state.num_positions = 0
-if 'num_certs' not in st.session_state:
-    st.session_state.num_certs = 0
 
 # Load BA Skills
 def load_ba_skills(level):
@@ -48,7 +42,7 @@ st.session_state.experience_level = experience_level
 # Load skills for auto-suggestions
 ba_skills = load_ba_skills(experience_level)
 
-# Header
+# Personal Information
 st.header("Personal Information")
 col1, col2 = st.columns(2)
 
@@ -64,6 +58,7 @@ with col2:
     work_auth = st.text_input("Work Authorization", key="work_auth")
     languages = st.text_input("Languages", key="languages")
 
+# Education
 st.header("Education")
 col1, col2 = st.columns(2)
 
@@ -71,14 +66,15 @@ with col1:
     st.subheader("Graduate Degree (Mandatory)")
     grad_degree = st.text_input("Degree Name *", key="grad_degree")
     grad_institution = st.text_input("Institution *", key="grad_institution")
-    grad_year = st.number_input("Graduation Year *", min_value=1990, max_value=2026, key="grad_year")
+    grad_year = st.number_input("Graduation Year *", min_value=1990, max_value=2026, key="grad_year", value=2020)
 
 with col2:
     st.subheader("Post Graduate (Optional)")
     post_grad_degree = st.text_input("Degree Name", key="post_grad_degree")
     post_grad_institution = st.text_input("Institution", key="post_grad_institution")
-    post_grad_year = st.number_input("Graduation Year", min_value=1990, max_value=2026, key="pg_year")
+    post_grad_year = st.number_input("Graduation Year", min_value=1990, max_value=2026, key="pg_year", value=2020)
 
+# Professional Summary
 st.header("Professional Summary")
 professional_summary = st.text_area(
     "Professional Summary (3-4 sentences) *",
@@ -87,6 +83,7 @@ professional_summary = st.text_area(
     help="Summarize your experience, core competencies, and value proposition"
 )
 
+# Core Competencies
 st.header("Core Competencies")
 default_competencies = ", ".join(ba_skills.get('functional', [])[:10]) if ba_skills else ""
 core_competencies = st.text_area(
@@ -96,6 +93,7 @@ core_competencies = st.text_area(
     key="core_competencies"
 )
 
+# Expertise
 st.header("Expertise")
 col1, col2 = st.columns(2)
 
@@ -121,96 +119,101 @@ domain_expertise = st.text_input("Domain Expertise (comma separated)", key="doma
 
 # Professional Experience Section
 st.header("Professional Experience")
-num_positions = st.number_input(
-    "Number of Positions",
-    min_value=0,
-    max_value=10,
-    value=st.session_state.num_positions,
-    key="num_positions",
-    help="Enter number of positions (0-10)"
-)
 
-# Update session state
-if num_positions != st.session_state.num_positions:
-    st.session_state.num_positions = num_positions
-    st.rerun()
+# Use a container to hold the number input
+num_pos_container = st.container()
+with num_pos_container:
+    num_positions = st.number_input(
+        "Number of Positions",
+        min_value=0,
+        max_value=10,
+        value=0,
+        key="num_positions_key",
+        help="Enter number of positions (0-10)"
+    )
 
+# ALWAYS render position fields - no conditions
+max_positions = 10  # Always prepare for max
 experience = []
 
-# Render position fields based on the input value
-for i in range(int(num_positions)):
-    st.subheader(f"Position {i+1}")
-    col1, col2 = st.columns(2)
-    
-    with col1:
-        org_name = st.text_input("Organization Name *", key=f"org_{i}")
-        role = st.text_input("Role *", key=f"role_{i}")
-    
-    with col2:
-        start_year = st.number_input("Start Year *", min_value=1990, max_value=2026, 
-                                   key=f"start_{i}", value=2020)
-        end_year = st.text_input("End Year (or 'Present')", value="Present", key=f"end_{i}")
-    
-    project_details = st.text_area(
-        "Project Details (one per line)",
-        height=150,
-        key=f"details_{i}",
-        help="Enter each project responsibility/achievement on a new line"
-    )
-    
-    if org_name and role:
-        experience.append({
-            'organization_name': org_name,
-            'role': role,
-            'job_start_year': start_year,
-            'job_end_year': end_year,
-            'project_detail': project_details.split('\n') if project_details else []
-        })
-    
-    if i < int(num_positions) - 1:
-        st.markdown("---")
+for i in range(max_positions):
+    # Only show if within the selected number
+    if i < num_positions:
+        st.subheader(f"Position {i+1}")
+        col1, col2 = st.columns(2)
+        
+        with col1:
+            org_name = st.text_input("Organization Name *", key=f"org_{i}")
+            role = st.text_input("Role *", key=f"role_{i}")
+        
+        with col2:
+            start_year = st.number_input("Start Year *", min_value=1990, max_value=2026, 
+                                       key=f"start_{i}", value=2020)
+            end_year = st.text_input("End Year (or 'Present')", value="Present", key=f"end_{i}")
+        
+        project_details = st.text_area(
+            "Project Details (one per line)",
+            height=150,
+            key=f"details_{i}",
+            help="Enter each project responsibility/achievement on a new line"
+        )
+        
+        if org_name and role:
+            experience.append({
+                'organization_name': org_name,
+                'role': role,
+                'job_start_year': start_year,
+                'job_end_year': end_year,
+                'project_detail': project_details.split('\n') if project_details else []
+            })
+        
+        if i < num_positions - 1:
+            st.markdown("---")
 
 # Certifications Section
 st.header("Certifications")
-num_certs = st.number_input(
-    "Number of Certifications",
-    min_value=0,
-    max_value=10,
-    value=st.session_state.num_certs,
-    key="num_certs",
-    help="Enter number of certifications (0-10)"
-)
 
-# Update session state
-if num_certs != st.session_state.num_certs:
-    st.session_state.num_certs = num_certs
-    st.rerun()
+# Use a container to hold the number input
+num_certs_container = st.container()
+with num_certs_container:
+    num_certs = st.number_input(
+        "Number of Certifications",
+        min_value=0,
+        max_value=10,
+        value=0,
+        key="num_certs_key",
+        help="Enter number of certifications (0-10)"
+    )
 
+# ALWAYS render certification fields - no conditions
+max_certs = 10  # Always prepare for max
 certifications = []
 
-# Render certification fields based on the input value
-for i in range(int(num_certs)):
-    st.subheader(f"Certification {i+1}")
-    col1, col2, col3 = st.columns(3)
-    
-    with col1:
-        cert_name = st.text_input("Certification Name *", key=f"cert_name_{i}")
-    with col2:
-        cert_institution = st.text_input("Institution", key=f"cert_inst_{i}")
-    with col3:
-        cert_year = st.number_input("Year", min_value=1990, max_value=2026, 
-                                  key=f"cert_year_{i}", value=2024)
-    
-    if cert_name:
-        certifications.append({
-            'certification_name': cert_name,
-            'institution_name': cert_institution,
-            'certification_year': cert_year
-        })
-    
-    if i < int(num_certs) - 1:
-        st.markdown("---")
+for i in range(max_certs):
+    # Only show if within the selected number
+    if i < num_certs:
+        st.subheader(f"Certification {i+1}")
+        col1, col2, col3 = st.columns(3)
+        
+        with col1:
+            cert_name = st.text_input("Certification Name *", key=f"cert_name_{i}")
+        with col2:
+            cert_institution = st.text_input("Institution", key=f"cert_inst_{i}")
+        with col3:
+            cert_year = st.number_input("Year", min_value=1990, max_value=2026, 
+                                      key=f"cert_year_{i}", value=2024)
+        
+        if cert_name:
+            certifications.append({
+                'certification_name': cert_name,
+                'institution_name': cert_institution,
+                'certification_year': cert_year
+            })
+        
+        if i < num_certs - 1:
+            st.markdown("---")
 
+# Additional Information
 st.header("Additional Information")
 col1, col2 = st.columns(2)
 
@@ -224,7 +227,7 @@ with col2:
 
 interests = st.text_input("Interests", key="interests")
 
-# Submit button (NOT inside a form)
+# Submit button
 if st.button("Generate Resume", type="primary"):
     # Validate required fields
     required_fields = {
@@ -276,8 +279,6 @@ if st.button("Generate Resume", type="primary"):
             'awards': awards,
             'interests': interests
         }
-        
-        st.session_state.resume_data = resume_data
         
         # Generate resume HTML
         try:
