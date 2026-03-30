@@ -72,6 +72,63 @@ with col2:
     post_grad_institution = st.text_input("Institution", key="post_grad_institution")
     post_grad_year = st.number_input("Graduation Year", min_value=1990, max_value=2026, key="pg_year", value=2020)
 
+# Certifications - MOVED HERE (Right after Education)
+st.header("Certifications")
+st.markdown("*Fill in as many certifications as needed. Leave blank if not applicable.*")
+
+certifications = []
+
+# Certification 1
+st.subheader("Certification 1")
+col1, col2, col3 = st.columns(3)
+with col1:
+    cert1_name = st.text_input("Certification Name", key="cert1_name")
+with col2:
+    cert1_inst = st.text_input("Institution", key="cert1_inst")
+with col3:
+    cert1_year = st.number_input("Year", min_value=1990, max_value=2026, key="cert1_year", value=2024)
+
+if cert1_name:
+    certifications.append({
+        'certification_name': cert1_name,
+        'institution_name': cert1_inst,
+        'certification_year': cert1_year
+    })
+
+# Certification 2
+st.subheader("Certification 2")
+col1, col2, col3 = st.columns(3)
+with col1:
+    cert2_name = st.text_input("Certification Name", key="cert2_name")
+with col2:
+    cert2_inst = st.text_input("Institution", key="cert2_inst")
+with col3:
+    cert2_year = st.number_input("Year", min_value=1990, max_value=2026, key="cert2_year", value=2024)
+
+if cert2_name:
+    certifications.append({
+        'certification_name': cert2_name,
+        'institution_name': cert2_inst,
+        'certification_year': cert2_year
+    })
+
+# Certification 3
+st.subheader("Certification 3")
+col1, col2, col3 = st.columns(3)
+with col1:
+    cert3_name = st.text_input("Certification Name", key="cert3_name")
+with col2:
+    cert3_inst = st.text_input("Institution", key="cert3_inst")
+with col3:
+    cert3_year = st.number_input("Year", min_value=1990, max_value=2026, key="cert3_year", value=2024)
+
+if cert3_name:
+    certifications.append({
+        'certification_name': cert3_name,
+        'institution_name': cert3_inst,
+        'certification_year': cert3_year
+    })
+
 # Professional Summary
 st.header("Professional Summary")
 professional_summary = st.text_area("Professional Summary (3-4 sentences) *", height=100, key="professional_summary")
@@ -95,7 +152,7 @@ with col2:
 
 domain_expertise = st.text_input("Domain Expertise (comma separated)", key="domain_expertise")
 
-# Professional Experience Section - FIXED 5 POSITIONS ALWAYS VISIBLE
+# Professional Experience Section
 st.header("Professional Experience")
 st.markdown("*Fill in as many positions as needed. Leave blank if not applicable.*")
 
@@ -159,63 +216,6 @@ if pos3_org and pos3_role:
         'job_start_year': pos3_start,
         'job_end_year': pos3_end,
         'project_detail': pos3_details.split('\n') if pos3_details else []
-    })
-
-# Certifications Section - FIXED 3 CERTIFICATIONS ALWAYS VISIBLE
-st.header("Certifications")
-st.markdown("*Fill in as many certifications as needed. Leave blank if not applicable.*")
-
-certifications = []
-
-# Certification 1
-st.subheader("Certification 1")
-col1, col2, col3 = st.columns(3)
-with col1:
-    cert1_name = st.text_input("Certification Name", key="cert1_name")
-with col2:
-    cert1_inst = st.text_input("Institution", key="cert1_inst")
-with col3:
-    cert1_year = st.number_input("Year", min_value=1990, max_value=2026, key="cert1_year", value=2024)
-
-if cert1_name:
-    certifications.append({
-        'certification_name': cert1_name,
-        'institution_name': cert1_inst,
-        'certification_year': cert1_year
-    })
-
-# Certification 2
-st.subheader("Certification 2")
-col1, col2, col3 = st.columns(3)
-with col1:
-    cert2_name = st.text_input("Certification Name", key="cert2_name")
-with col2:
-    cert2_inst = st.text_input("Institution", key="cert2_inst")
-with col3:
-    cert2_year = st.number_input("Year", min_value=1990, max_value=2026, key="cert2_year", value=2024)
-
-if cert2_name:
-    certifications.append({
-        'certification_name': cert2_name,
-        'institution_name': cert2_inst,
-        'certification_year': cert2_year
-    })
-
-# Certification 3
-st.subheader("Certification 3")
-col1, col2, col3 = st.columns(3)
-with col1:
-    cert3_name = st.text_input("Certification Name", key="cert3_name")
-with col2:
-    cert3_inst = st.text_input("Institution", key="cert3_inst")
-with col3:
-    cert3_year = st.number_input("Year", min_value=1990, max_value=2026, key="cert3_year", value=2024)
-
-if cert3_name:
-    certifications.append({
-        'certification_name': cert3_name,
-        'institution_name': cert3_inst,
-        'certification_year': cert3_year
     })
 
 # Additional Information
