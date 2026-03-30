@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+
+{% block title %}Preview Resume - The BA Architect{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-12">
+        <h1>Resume Preview</h1>
+        <p class="lead">Review your resume before exporting.</p>
+    </div>
+</div>
+
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="btn-group" role="group">
+            <a href="{{ url_for('export', format_type='pdf') }}" class="btn btn-success me-2">
+                <i class="bi bi-file-pdf"></i> Export PDF
+            </a>
+            <a href="{{ url_for('export', format_type='word') }}" class="btn btn-info me-2">
+                <i class="bi bi-file-earmark-word"></i> Export Word
+            </a>
+            <a href="{{ url_for('index') }}" class="btn btn-secondary">Edit Resume</a>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body">
+                {{ resume_html | safe }}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
