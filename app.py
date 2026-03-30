@@ -22,6 +22,10 @@ if 'resume_data' not in st.session_state:
     st.session_state.resume_data = None
 if 'experience_level' not in st.session_state:
     st.session_state.experience_level = 'fresher'
+if 'num_positions' not in st.session_state:
+    st.session_state.num_positions = 0
+if 'num_certs' not in st.session_state:
+    st.session_state.num_certs = 0
 
 # Load BA Skills
 def load_ba_skills(level):
@@ -109,81 +113,97 @@ with st.form("resume_form", clear_on_submit=False):
     
     domain_expertise = st.text_input("Domain Expertise (comma separated)", "")
     
-    # FIX ISSUE 1: Professional Experience Section
+    # Professional Experience Section - FIXED
     st.header("Professional Experience")
-    num_positions = st.number_input("Number of Positions", min_value=0, max_value=10, value=0, 
-                                    help="Enter number of positions you want to add (0-10)")
+    num_positions_input = st.number_input(
+        "Number of Positions", 
+        min_value=0, 
+        max_value=10, 
+        value=st.session_state.num_positions,
+        help="Enter number of positions (0-10), then click outside to show fields"
+    )
+    
+    # Update session state
+    if num_positions_input != st.session_state.num_positions:
+        st.session_state.num_positions = num_positions_input
     
     experience = []
     
-    # Render position fields based on num_positions
-    if num_positions > 0:
-        for i in range(int(num_positions)):
-            st.subheader(f"Position {i+1}")
-            col1, col2 = st.columns(2)
-            
-            with col1:
-                org_name = st.text_input("Organization Name *", key=f"org_{i}")
-                role = st.text_input("Role *", key=f"role_{i}")
-            
-            with col2:
-                start_year = st.number_input("Start Year *", min_value=1990, max_value=2026, 
-                                           key=f"start_{i}", value=2020)
-                end_year = st.text_input("End Year (or 'Present')", value="Present", key=f"end_{i}")
-            
-            project_details = st.text_area(
-                "Project Details (one per line)",
-                height=150,
-                key=f"details_{i}",
-                help="Enter each project responsibility/achievement on a new line"
-            )
-            
-            # Only add to experience if organization and role are filled
-            if org_name and role:
-                experience.append({
-                    'organization_name': org_name,
-                    'role': role,
-                    'job_start_year': start_year,
-                    'job_end_year': end_year,
-                    'project_detail': project_details.split('\n') if project_details else []
-                })
-            
-            # Add separator between positions
-            if i < num_positions - 1:
-                st.markdown("---")
+    # Always render position fields (don't use conditional)
+    for i in range(st.session_state.num_positions):
+        st.subheader(f"Position {i+1}")
+        col1, col2 = st.columns(2)
+        
+        with col1:
+            org_name = st.text_input("Organization Name *", key=f"org_{i}")
+            role = st.text_input("Role *", key=f"role_{i}")
+        
+        with col2:
+            start_year = st.number_input("Start Year *", min_value=1990, max_value=2026, 
+                                       key=f"start_{i}", value=2020)
+            end_year = st.text_input("End Year (or 'Present')", value="Present", key=f"end_{i}")
+        
+        project_details = st.text_area(
+            "Project Details (one per line)",
+            height=150,
+            key=f"details_{i}",
+            help="Enter each project responsibility/achievement on a new line"
+        )
+        
+        # Only add to experience if organization and role are filled
+        if org_name and role:
+            experience.append({
+                'organization_name': org_name,
+                'role': role,
+                'job_start_year': start_year,
+                'job_end_year': end_year,
+                'project_detail': project_details.split('\n') if project_details else []
+            })
+        
+        # Add separator between positions
+        if i < st.session_state.num_positions - 1:
+            st.markdown("---")
     
-    # FIX ISSUE 2: Certifications Section
+    # Certifications Section - FIXED
     st.header("Certifications")
-    num_certs = st.number_input("Number of Certifications", min_value=0, max_value=10, value=0,
-                                help="Enter number of certifications you want to add (0-10)")
+    num_certs_input = st.number_input(
+        "Number of Certifications", 
+        min_value=0, 
+        max_value=10, 
+        value=st.session_state.num_certs,
+        help="Enter number of certifications (0-10), then click outside to show fields"
+    )
+    
+    # Update session state
+    if num_certs_input != st.session_state.num_certs:
+        st.session_state.num_certs = num_certs_input
     
     certifications = []
     
-    # Render certification fields based on num_certs
-    if num_certs > 0:
-        for i in range(int(num_certs)):
-            st.subheader(f"Certification {i+1}")
-            col1, col2, col3 = st.columns(3)
-            
-            with col1:
-                cert_name = st.text_input("Certification Name *", key=f"cert_name_{i}")
-            with col2:
-                cert_institution = st.text_input("Institution", key=f"cert_inst_{i}")
-            with col3:
-                cert_year = st.number_input("Year", min_value=1990, max_value=2026, 
-                                          key=f"cert_year_{i}", value=2024)
-            
-            # Only add to certifications if name is filled
-            if cert_name:
-                certifications.append({
-                    'certification_name': cert_name,
-                    'institution_name': cert_institution,
-                    'certification_year': cert_year
-                })
-            
-            # Add separator between certifications
-            if i < num_certs - 1:
-                st.markdown("---")
+    # Always render certification fields (don't use conditional)
+    for i in range(st.session_state.num_certs):
+        st.subheader(f"Certification {i+1}")
+        col1, col2, col3 = st.columns(3)
+        
+        with col1:
+            cert_name = st.text_input("Certification Name *", key=f"cert_name_{i}")
+        with col2:
+            cert_institution = st.text_input("Institution", key=f"cert_inst_{i}")
+        with col3:
+            cert_year = st.number_input("Year", min_value=1990, max_value=2026, 
+                                      key=f"cert_year_{i}", value=2024)
+        
+        # Only add to certifications if name is filled
+        if cert_name:
+            certifications.append({
+                'certification_name': cert_name,
+                'institution_name': cert_institution,
+                'certification_year': cert_year
+            })
+        
+        # Add separator between certifications
+        if i < st.session_state.num_certs - 1:
+            st.markdown("---")
     
     st.header("Additional Information")
     col1, col2 = st.columns(2)
@@ -288,7 +308,7 @@ if submitted:
         
         except Exception as e:
             st.error(f"Error generating resume: {str(e)}")
-            st.exception(e)  # Show full traceback for debugging
+            st.exception(e)
 
 # Footer
 st.markdown("---")
