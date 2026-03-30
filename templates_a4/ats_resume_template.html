@@ -47,6 +47,7 @@
             margin: 20px 0 10px 0;
             padding-bottom: 3px;
             color: #2c3e50;
+            text-transform: uppercase;
         }
         
         h3 {
@@ -122,6 +123,18 @@
             flex: 1;
         }
         
+        .additional-section p {
+            margin-bottom: 8px;
+            text-align: justify;
+        }
+        
+        .additional-section strong {
+            display: block;
+            margin-top: 10px;
+            margin-bottom: 5px;
+            font-size: 11pt;
+        }
+        
         @media print {
             body {
                 padding: 0;
@@ -157,7 +170,7 @@
 
     <!-- Education Section -->
     <section class="section">
-        <h2>EDUCATION</h2>
+        <h2>Education</h2>
         
         {% if resume_data.graduate_degree %}
         <div class="education-item">
@@ -184,11 +197,12 @@
         {% endif %}
     </section>
 
-    <!-- Certifications Section -->
-    {% if resume_data.certifications and resume_data.certifications|length > 0 %}
+    <!-- Certifications Section - FIX ISSUE 1 -->
+    {% if resume_data.certifications %}
     <section class="section">
-        <h2>CERTIFICATIONS</h2>
+        <h2>Certifications</h2>
         {% for cert in resume_data.certifications %}
+        {% if cert.certification_name %}
         <div class="certification-item">
             <div class="cert-header">
                 <div>
@@ -202,6 +216,7 @@
                 {% endif %}
             </div>
         </div>
+        {% endif %}
         {% endfor %}
     </section>
     {% endif %}
@@ -209,7 +224,7 @@
     <!-- Professional Summary -->
     {% if resume_data.professional_summary %}
     <section class="section">
-        <h2>PROFESSIONAL SUMMARY</h2>
+        <h2>Professional Summary</h2>
         <div class="summary">
             {{ resume_data.professional_summary }}
         </div>
@@ -219,7 +234,7 @@
     <!-- Core Competencies -->
     {% if resume_data.core_competencies %}
     <section class="section">
-        <h2>CORE COMPETENCIES</h2>
+        <h2>Core Competencies</h2>
         <div class="skills-list">
             {% for competency in resume_data.core_competencies %}
             <span class="skill-item">{{ competency }}</span>
@@ -230,7 +245,6 @@
 
     <!-- Technical & Functional Expertise -->
     <section class="section">
-        {% if resume_data.technical_expertise or resume_data.functional_expertise %}
         <div class="two-column">
             {% if resume_data.technical_expertise %}
             <div class="column">
@@ -254,7 +268,6 @@
             </div>
             {% endif %}
         </div>
-        {% endif %}
         
         {% if resume_data.domain_expertise %}
         <div style="margin-top: 10px;">
@@ -271,7 +284,7 @@
     <!-- Professional Experience -->
     {% if resume_data.experience and resume_data.experience|length > 0 %}
     <section class="section">
-        <h2>PROFESSIONAL EXPERIENCE</h2>
+        <h2>Professional Experience</h2>
         {% for exp in resume_data.experience %}
         <div class="experience-item">
             <div class="exp-header">
@@ -293,47 +306,47 @@
     </section>
     {% endif %}
 
-    <!-- Additional Information -->
-    <section class="section">
-        {% if resume_data.projects or resume_data.volunteering or resume_data.publications or resume_data.awards %}
-        <h2>ADDITIONAL INFORMATION</h2>
+    <!-- Additional Information - FIX ISSUE 2 -->
+    <section class="section additional-section">
+        {% if resume_data.projects or resume_data.volunteering or resume_data.publications or resume_data.awards or resume_data.interests %}
+        <h2>Additional Information</h2>
         
-        {% if resume_data.projects %}
-        <div style="margin-bottom: 10px;">
-            <h3>Key Projects</h3>
+        {% if resume_data.projects and resume_data.projects|length > 0 %}
+        <div>
+            <strong>Key Projects</strong>
             <p>{{ resume_data.projects }}</p>
         </div>
         {% endif %}
         
-        {% if resume_data.volunteering %}
-        <div style="margin-bottom: 10px;">
-            <h3>Volunteering & Leadership</h3>
+        {% if resume_data.volunteering and resume_data.volunteering|length > 0 %}
+        <div>
+            <strong>Volunteering & Leadership</strong>
             <p>{{ resume_data.volunteering }}</p>
         </div>
         {% endif %}
         
-        {% if resume_data.publications %}
-        <div style="margin-bottom: 10px;">
-            <h3>Publications</h3>
+        {% if resume_data.publications and resume_data.publications|length > 0 %}
+        <div>
+            <strong>Publications</strong>
             <p>{{ resume_data.publications }}</p>
         </div>
         {% endif %}
         
-        {% if resume_data.awards %}
-        <div style="margin-bottom: 10px;">
-            <h3>Awards & Honors</h3>
+        {% if resume_data.awards and resume_data.awards|length > 0 %}
+        <div>
+            <strong>Awards & Honors</strong>
             <p>{{ resume_data.awards }}</p>
         </div>
         {% endif %}
         
-        {% if resume_data.interests %}
+        {% if resume_data.interests and resume_data.interests|length > 0 %}
         <div>
-            <h3>Interests</h3>
+            <strong>Interests</strong>
             <p>{{ resume_data.interests }}</p>
         </div>
         {% endif %}
+        {% endif %}
     </section>
-    {% endif %}
 
 </body>
 </html>
