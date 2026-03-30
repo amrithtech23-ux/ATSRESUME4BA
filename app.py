@@ -17,17 +17,11 @@ st.set_page_config(
 st.title("📄 The BA Architect")
 st.subheader("ATS-Compliant IT Business Analyst Resume Generator")
 
-# Initialize session state - MUST BE AT THE TOP
+# Initialize session state
 if 'resume_data' not in st.session_state:
     st.session_state.resume_data = None
 if 'experience_level' not in st.session_state:
     st.session_state.experience_level = 'fresher'
-if 'num_positions' not in st.session_state:
-    st.session_state.num_positions = 0
-if 'num_certs' not in st.session_state:
-    st.session_state.num_certs = 0
-if 'form_submitted' not in st.session_state:
-    st.session_state.form_submitted = False
 
 # Load BA Skills
 def load_ba_skills(level):
@@ -42,21 +36,13 @@ st.sidebar.header("Select Experience Level")
 experience_level = st.sidebar.selectbox(
     "Your Level",
     ['fresher', 'junior', 'associate', 'senior', 'principal', 'lead'],
-    format_func=lambda x: x.title(),
-    index=0
+    format_func=lambda x: x.title()
 )
 
 st.session_state.experience_level = experience_level
 
 # Load skills for auto-suggestions
 ba_skills = load_ba_skills(experience_level)
-
-# Callback functions to update counts
-def update_num_positions():
-    st.session_state.num_positions = st.session_state.pos_input
-
-def update_num_certs():
-    st.session_state.num_certs = st.session_state.cert_input
 
 # Main Form
 with st.form("resume_form", clear_on_submit=False):
@@ -132,85 +118,85 @@ with st.form("resume_form", clear_on_submit=False):
     
     # Professional Experience Section
     st.header("Professional Experience")
-    
-    # Number input with callback
-    st.number_input(
+    num_positions = st.number_input(
         "Number of Positions",
         min_value=0,
         max_value=10,
-        value=st.session_state.num_positions,
-        key="pos_input",
-        on_change=update_num_positions,
-        help="Set the number of positions, then fields will appear below"
+        value=0,
+        key="num_positions_input",
+        help="Enter number of positions (0-10)"
     )
     
     experience = []
     
-    # Render position fields
-    for i in range(st.session_state.num_positions):
-        with st.expander(f"Position {i+1}", expanded=True):
-            col1, col2 = st.columns(2)
-            
-            with col1:
-                org_name = st.text_input("Organization Name *", key=f"org_{i}")
-                role = st.text_input("Role *", key=f"role_{i}")
-            
-            with col2:
-                start_year = st.number_input("Start Year *", min_value=1990, max_value=2026, 
-                                           key=f"start_{i}", value=2020)
-                end_year = st.text_input("End Year (or 'Present')", value="Present", key=f"end_{i}")
-            
-            project_details = st.text_area(
-                "Project Details (one per line)",
-                height=150,
-                key=f"details_{i}",
-                help="Enter each project responsibility/achievement on a new line"
-            )
-            
-            if org_name and role:
-                experience.append({
-                    'organization_name': org_name,
-                    'role': role,
-                    'job_start_year': start_year,
-                    'job_end_year': end_year,
-                    'project_detail': project_details.split('\n') if project_details else []
-                })
+    # Render position fields based on the input value
+    for i in range(int(num_positions)):
+        st.subheader(f"Position {i+1}")
+        col1, col2 = st.columns(2)
+        
+        with col1:
+            org_name = st.text_input("Organization Name *", key=f"org_{i}")
+            role = st.text_input("Role *", key=f"role_{i}")
+        
+        with col2:
+            start_year = st.number_input("Start Year *", min_value=1990, max_value=2026, 
+                                       key=f"start_{i}", value=2020)
+            end_year = st.text_input("End Year (or 'Present')", value="Present", key=f"end_{i}")
+        
+        project_details = st.text_area(
+            "Project Details (one per line)",
+            height=150,
+            key=f"details_{i}",
+            help="Enter each project responsibility/achievement on a new line"
+        )
+        
+        if org_name and role:
+            experience.append({
+                'organization_name': org_name,
+                'role': role,
+                'job_start_year': start_year,
+                'job_end_year': end_year,
+                'project_detail': project_details.split('\n') if project_details else []
+            })
+        
+        if i < int(num_positions) - 1:
+            st.markdown("---")
     
     # Certifications Section
     st.header("Certifications")
-    
-    # Number input with callback
-    st.number_input(
+    num_certs = st.number_input(
         "Number of Certifications",
         min_value=0,
         max_value=10,
-        value=st.session_state.num_certs,
-        key="cert_input",
-        on_change=update_num_certs,
-        help="Set the number of certifications, then fields will appear below"
+        value=0,
+        key="num_certs_input",
+        help="Enter number of certifications (0-10)"
     )
     
     certifications = []
     
-    # Render certification fields
-    for i in range(st.session_state.num_certs):
-        with st.expander(f"Certification {i+1}", expanded=True):
-            col1, col2, col3 = st.columns(3)
-            
-            with col1:
-                cert_name = st.text_input("Certification Name *", key=f"cert_name_{i}")
-            with col2:
-                cert_institution = st.text_input("Institution", key=f"cert_inst_{i}")
-            with col3:
-                cert_year = st.number_input("Year", min_value=1990, max_value=2026, 
-                                          key=f"cert_year_{i}", value=2024)
-            
-            if cert_name:
-                certifications.append({
-                    'certification_name': cert_name,
-                    'institution_name': cert_institution,
-                    'certification_year': cert_year
-                })
+    # Render certification fields based on the input value
+    for i in range(int(num_certs)):
+        st.subheader(f"Certification {i+1}")
+        col1, col2, col3 = st.columns(3)
+        
+        with col1:
+            cert_name = st.text_input("Certification Name *", key=f"cert_name_{i}")
+        with col2:
+            cert_institution = st.text_input("Institution", key=f"cert_inst_{i}")
+        with col3:
+            cert_year = st.number_input("Year", min_value=1990, max_value=2026, 
+                                      key=f"cert_year_{i}", value=2024)
+        
+        if cert_name:
+            certifications.append({
+                'certification_name': cert_name,
+                'institution_name': cert_institution,
+                'certification_year': cert_year
+            })
+        
+        if i < int(num_certs) - 1:
+            st.markdown("---")
     
     st.header("Additional Information")
     col1, col2 = st.columns(2)
@@ -229,12 +215,18 @@ with st.form("resume_form", clear_on_submit=False):
     submitted = st.form_submit_button("Generate Resume", type="primary")
 
 if submitted:
+    # Get values from session state or form
+    full_name_val = st.session_state.get('full_name', '')
+    email_val = st.session_state.get('email', '')
+    phone_val = st.session_state.get('phone', '')
+    location_val = st.session_state.get('location', '')
+    
     # Validate required fields
     required_fields = {
-        'Full Name': st.session_state.get('full_name', ''),
-        'Email': st.session_state.get('email', ''),
-        'Phone': st.session_state.get('phone', ''),
-        'Location': st.session_state.get('location', ''),
+        'Full Name': full_name_val,
+        'Email': email_val,
+        'Phone': phone_val,
+        'Location': location_val,
         'Professional Summary': st.session_state.get('professional_summary', ''),
         'Graduate Degree': st.session_state.get('grad_degree', ''),
         'Graduate Institution': st.session_state.get('grad_institution', '')
@@ -245,12 +237,12 @@ if submitted:
     if missing_fields:
         st.error(f"Please fill in all required fields: {', '.join(missing_fields)}")
     else:
-        # Compile resume data from session state
+        # Compile resume data
         resume_data = {
-            'full_name': st.session_state.get('full_name', ''),
-            'email': st.session_state.get('email', ''),
-            'phone': st.session_state.get('phone', ''),
-            'location': st.session_state.get('location', ''),
+            'full_name': full_name_val,
+            'email': email_val,
+            'phone': phone_val,
+            'location': location_val,
             'linkedin': st.session_state.get('linkedin', ''),
             'portfolio': st.session_state.get('portfolio', ''),
             'work_authorization': st.session_state.get('work_auth', ''),
@@ -305,7 +297,7 @@ if submitted:
                     st.download_button(
                         label="📥 Download as HTML",
                         data=f.read(),
-                        file_name=f"BA_Resume_{st.session_state.get('full_name', 'Resume').replace(' ', '_')}.html",
+                        file_name=f"BA_Resume_{full_name_val.replace(' ', '_')}.html",
                         mime="text/html"
                     )
             
